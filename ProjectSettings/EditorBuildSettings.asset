@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/5mok/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/5mok/Scenes/Lobby.unity
+    guid: 54fda6138fc30e340a55ab64099c1275
+  - enabled: 1
+    path: Assets/5mok/Scenes/Omok.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
   m_configObjects: {}
