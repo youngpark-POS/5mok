@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Pun.UtilityScripts;
+using TMPro;
 
 namespace MyProject
 {
     public class OmokPlayer : MonoBehaviour
     {
         private OmokGame game;
+        private sbyte myPlayerID;
+        public PhotonView photonView;
 
         private float timer = 0f;
 
@@ -17,8 +22,11 @@ namespace MyProject
         [SerializeField] private Transform board = null;
         [SerializeField] private Transform pieceParent = null;
         [SerializeField] private LineRenderer matchLine = null;
+        [SerializeField] private TextMeshProUGUI tempText = null;
 
         private GameObject[,] pieces;
+
+        private bool actionLock = false;
 
         private void Awake()
         {
@@ -35,20 +43,37 @@ namespace MyProject
             this.game.onGameEnd += OnGameEnd;
         }
 
+        private void Start()
+        {
+            this.myPlayerID = PhotonNetwork.LocalPlayer.ActorNumber == 1 ? (sbyte)1 : (sbyte)-1;
+        }
+
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0) && this.game.player == 1)
+            tempText.text = $"Mine: {myPlayerID}\nCurrent turn: {this.game.player}";
+            if (!this.actionLock)
             {
-                Vector3 worldMouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                if (WorldToBoard(worldMouse, out int r, out int c))
+                if (Input.GetMouseButtonDown(0) && this.game.player == myPlayerID)
                 {
-                    if (this.game.TakeAction(r, c))
+                    Vector3 worldMouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    if (WorldToBoard(worldMouse, out int r, out int c))
                     {
-                        UpdatePieces();
-                        Invoke("AITurn", 0.5f);
+                        this.actionLock = true;
+                        photonView.RPC(nameof(DoAction), RpcTarget.All, r, c);
                     }
                 }
             }
+        }
+
+        [PunRPC]
+        private void DoAction(int r, int c)
+        {
+            if (this.game.TakeAction(r, c))
+            {
+                UpdatePieces();
+            }
+
+            this.actionLock = false;
         }
 
         private void AITurn()

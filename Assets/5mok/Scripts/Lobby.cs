@@ -6,6 +6,7 @@ using TMPro;
 using ExitGames.Client.Photon;
 using Photon.Realtime;
 using Photon.Pun;
+using Photon.Pun.UtilityScripts;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 namespace MyProject
@@ -84,7 +85,6 @@ namespace MyProject
             {
                 if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
                 {
-                    Debug.Log("#player = 2");
                     PhotonNetwork.LoadLevel("Omok");
                 }
             }
